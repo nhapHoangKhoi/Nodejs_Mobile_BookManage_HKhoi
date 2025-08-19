@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from "cors";
 import dotenv from "dotenv";
 import { connectDatabase } from './config/database';
+import job from './config/cron';
 // import swaggerUi from 'swagger-ui-express';
 // import swaggerFile from './swagger_output.json';
 
@@ -21,6 +22,9 @@ dotenv.config();
 
 // Connect to database
 connectDatabase();
+
+// Cron jobs
+job.start();
 
 // Swagger UI
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
