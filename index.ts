@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from "cors";
 import dotenv from "dotenv";
-// import { connectDatabase } from './config/database';
+import { connectDatabase } from './config/database';
 // import swaggerUi from 'swagger-ui-express';
 // import swaggerFile from './swagger_output.json';
 
@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 // --- End cookie-parser library
 
 // import clientRoutes from "./routes/client/index.route";
+import authRoutes from "./routes/auth.route";
 
 const app = express();
 const port = 4000;
@@ -19,18 +20,19 @@ const port = 4000;
 dotenv.config();
 
 // Connect to database
-// connectDatabase();
+connectDatabase();
 
 // Swagger UI
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // CORS
-app.use(cors({
-  origin: "http://localhost:3000", // must be a particular domain name
-  credentials: true, // allow sending cookie
-  methods: ["GET", "POST", "PATCH", "DELETE"], // allowed methods
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(cors());
+// app.use(cors({
+//   origin: "http://localhost:3000", // must be a particular domain name
+//   credentials: true, // allow sending cookie
+//   methods: ["GET", "POST", "PATCH", "DELETE"], // allowed methods
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
 
 // allow sending data as json
 app.use(express.json());
@@ -44,6 +46,7 @@ app.use(express.json());
 
 // --- Set up routes
 // app.use("/", clientRoutes);
+app.use("/api/auth", authRoutes);
 // --- End set up routes
 
 app.listen(port, () => {
