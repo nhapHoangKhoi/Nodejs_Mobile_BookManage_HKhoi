@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import User from "../models/user.model";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const router = Router();
 
@@ -67,6 +68,48 @@ router.post("/register", async (req: Request, res: Response) => {
   } 
   catch(error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/login", async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if(!email || !password) {
+      res.status(400).json({ message: "All fields are required" });
+      return;
+    }
+
+    // check if user exists
+    const user = await User.findOne({ email: email });
+    if(!user) {
+      res.status(400).json({ message: "Invalid credentials" });
+      return;
+    }
+    
+    // check if password is correct
+    const isPasswordCorrect = await bcrypt.compare(password, `${user.password}`);
+    if(!isPasswordCorrect) {
+      res.status(400).json({ message: "Invalid credentials" });
+      return;
+    }
+
+    const token = generateToken(`${user._id}`);
+
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
+        createdAt: user.createdAt,
+      },
+    });
+  } 
+  catch (error) {
+    console.log("Error in login route", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
