@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "start": "nodemon index.ts",
+    "start-compile": "node dist/index.js",
     "swagger-autogen": "ts-node swagger.ts"
   },
   "dependencies": {
