@@ -68,7 +68,7 @@ router.get("/",
         .limit(limit)
         .populate("user", "username profileImage"); // from field "user" in each book record,
                                                     // next get the correspond username, image
-      res.send({
+      res.json({
         books: books,
         currentPage: page,
         totalRecords: totalRecords,
@@ -78,6 +78,29 @@ router.get("/",
     catch (error) {
       console.log("Error in get all books route", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+router.get("/user", 
+  protectRoute, 
+  async (req: UserRequest, res: Response) => {
+    try {
+      const books = await BookModel
+        .find({ 
+          user: req.user._id 
+        })
+        .sort({
+          createdAt: "desc"
+        });
+      
+      res.json({
+        books: books
+      });
+    } 
+    catch (error: any) {
+      console.error("Get user books error:", error.message);
+      res.status(500).json({ message: "Server error" });
     }
   }
 );
