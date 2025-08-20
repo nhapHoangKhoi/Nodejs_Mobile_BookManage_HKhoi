@@ -1,0 +1,41 @@
+import { NextFunction, Response } from "express";
+import jwt from "jsonwebtoken";
+import UserModel from "../models/user.model";
+import { UserRequest } from "../interfaces/request.interface";
+
+// const response = await fetch(`http://localhost:3000/api/books`, {
+//   method: "POST",
+//   headers: { Authorization: `Bearer ${token}` },
+//   body: JSON.stringify({
+//     title,
+//     caption
+//   }),
+// });
+
+const protectRoute = async (req: UserRequest, res: Response, next: NextFunction) => {
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+    if(!token) {
+      res.status(401).json({ message: "No authentication token, access denied" });
+      return;
+    } 
+
+    const decoded = jwt.verify(token, `${process.env.JWT_SECRET}`) as jwt.JwtPayload;
+    const { userId } = decoded;
+
+    const user = await UserModel.findById(userId).select("-password");
+    if(!user) {
+      res.status(401).json({ message: "Token is not valid" });
+      return;
+    } 
+
+    req.user = user;
+    next();
+  } 
+  catch(error: any) {
+    console.error("Authentication error:", error.message);
+    res.status(401).json({ message: "Token is not valid" });
+  }
+};
+
+export default protectRoute;

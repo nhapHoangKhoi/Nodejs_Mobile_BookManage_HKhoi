@@ -13,6 +13,7 @@ import job from './config/cron';
 
 // import clientRoutes from "./routes/client/index.route";
 import authRoutes from "./routes/auth.route";
+import bookRoutes from "./routes/book.route";
 
 const app = express();
 const port = 4000;
@@ -51,6 +52,7 @@ app.use(express.json());
 // --- Set up routes
 // app.use("/", clientRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/books", bookRoutes);
 // --- End set up routes
 
 app.listen(port, () => {
