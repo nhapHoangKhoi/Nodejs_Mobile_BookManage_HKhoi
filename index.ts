@@ -16,7 +16,7 @@ import authRoutes from "./routes/auth.route";
 import bookRoutes from "./routes/book.route";
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 // Load environment variables from .env file
 dotenv.config();
