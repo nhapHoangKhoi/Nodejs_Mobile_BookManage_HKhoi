@@ -5,6 +5,7 @@ import { UserRequest } from "../interfaces/request.interface";
 // --- Libray for uploading file, and upload to cloudinary
 import multer from "multer";
 import { storage } from "../config/cloudinary";
+import cloudinary from "../config/cloudinary";
 const upload = multer({ 
   storage: storage 
 });
@@ -101,6 +102,52 @@ router.get("/user",
     catch (error: any) {
       console.error("Get user books error:", error.message);
       res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
+router.delete("/:id", 
+  protectRoute, 
+  async (req: UserRequest, res: Response) => {
+    try {
+      const book = await BookModel.findById(req.params.id);
+      if(!book) {
+        res.status(404).json({ 
+          message: "Book not found in the system!" 
+        });
+        return;
+      }
+
+      // check if user is the creator of the book
+      if(book.user.toString() !== req.user._id.toString()) {
+        res.status(401).json({ 
+          message: "Unauthorized" 
+        });
+        return;
+      }
+
+      // https://res.cloudinary.com/de1rm4uto/image/upload/v1741568358/abcdefgh.png
+      // delete image from cloduinary as well
+      if(book.image && book.image.includes("res.cloudinary.com")) {
+        try {
+          // pop out the last then split by symbol dot "."
+          const publicId = book.image.split("/").pop()?.split(".")[0]; 
+          await cloudinary.uploader.destroy(`${publicId}`);
+        } 
+        catch (deleteError) {
+          console.log("Error deleting image from cloudinary", deleteError);
+        }
+      }
+
+      await book.deleteOne();
+
+      res.json({ 
+        message: "Book deleted successfully" 
+      });
+    } 
+    catch(error) {
+      console.log("Error deleting book", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 );

@@ -15,3 +15,5 @@ cloudinary.config({
 export const storage = new CloudinaryStorage({
   cloudinary,
 });
+
+export default cloudinary;
