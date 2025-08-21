@@ -132,7 +132,10 @@ router.delete("/:id",
         try {
           // pop out the last then split by symbol dot "."
           const publicId = book.image.split("/").pop()?.split(".")[0]; 
-          await cloudinary.uploader.destroy(`${publicId}`);
+
+          // CDN may still return the cached version until the cache expires (can take hours to days)
+          // so we need { invalidate: true }
+          await cloudinary.uploader.destroy(`${publicId}`, { invalidate: true });
         } 
         catch (deleteError) {
           console.log("Error deleting image from cloudinary", deleteError);
