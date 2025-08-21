@@ -12,8 +12,6 @@ import job from './config/cron';
 // --- End cookie-parser library
 
 import adminRoutes from "./routes/admin/index.route";
-// import authRoutes from "./routes/admin/auth.route";
-// import bookRoutes from "./routes/book.route";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -51,8 +49,6 @@ app.use(express.json());
 
 // --- Set up routes
 app.use("/api", adminRoutes);
-// app.use("/api/auth", authRoutes);
-// app.use("/api/books", bookRoutes);
 // --- End set up routes
 
 app.listen(port, () => {

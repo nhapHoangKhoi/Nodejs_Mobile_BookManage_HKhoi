@@ -30,7 +30,10 @@ router.get(
 router.post(
   "/", 
   authMiddleware.protectRoute,
-  upload.single("image"),
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'fileBook', maxCount: 1 }
+  ]), 
   bookController.createBook
 );
 

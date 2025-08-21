@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import BookModel from "../../models/book.model";
-import { UserRequest } from "../../interfaces/request.interface";
-import cloudinary from "../../config/cloudinary";
+import { BookRequest } from "../../interfaces/request.interface";
+import { deleteAssetOutOfCloudinary } from "../../utils/cloudinary.utils";
 
 // lazy loading (infinite loading) when scrolloing using pagination
 // idea (sent from frontend): 
@@ -37,7 +37,7 @@ export const getListBooks = async (req: Request, res: Response) => {
   }
 }
 
-export const getListOwnerPublishedBooks = async (req: UserRequest, res: Response) => {
+export const getListOwnerPublishedBooks = async (req: BookRequest, res: Response) => {
   try {
     const books = await BookModel
       .find({ 
@@ -57,7 +57,7 @@ export const getListOwnerPublishedBooks = async (req: UserRequest, res: Response
   }
 }
 
-export const createBook = async (req: UserRequest, res: Response) => {
+export const createBook = async (req: BookRequest, res: Response) => {
   try {
     const { title, caption, rating } = req.body;
 
@@ -66,11 +66,31 @@ export const createBook = async (req: UserRequest, res: Response) => {
       return;
     }
 
-    if(req.file) {
-      req.body.image = req.file.path;
+    // Object.keys()  => convert object to array of keys
+    // request.files  =>  { logo: 5, favicon: 10 }  =>  Objet.keys()  =>  [ "logo", "favion" ]
+    //
+    // typscript => ?? {} means if req.files is undefined, replace with an empty object
+    //
+    const uploadedFiles = req.files as { [fieldname: string]: Express.Multer.File[] };
+    
+    if(Object.keys(uploadedFiles).length > 0) {
+      if(uploadedFiles.image) {
+        req.body.image = uploadedFiles.image[0].path;
+      } 
+      else {
+        delete req.body.image;
+      }
+
+      if(uploadedFiles.fileBook) {
+        req.body.fileBook = uploadedFiles.fileBook[0].path;
+      } 
+      else {
+        delete req.body.fileBook;
+      }
     } 
     else {
-      delete req.body.image;
+      delete req.body.image;    // warning: request.body.avatar = "" is incorrect
+      delete req.body.fileBook; // it will override the data in database as "" => losing image
     }
 
     req.body.user = req.user._id;
@@ -89,7 +109,7 @@ export const createBook = async (req: UserRequest, res: Response) => {
   }
 }
 
-export const deleteBookPermanent = async (req: UserRequest, res: Response) => {
+export const deleteBookPermanent = async (req: BookRequest, res: Response) => {
   try {
     const book = await BookModel.findById(req.params.id);
     if(!book) {
@@ -108,25 +128,14 @@ export const deleteBookPermanent = async (req: UserRequest, res: Response) => {
     }
 
     // https://res.cloudinary.com/de1rm4uto/image/upload/v1741568358/abcdefgh.png
-    // delete image from cloduinary as well
-    if(book.image && book.image.includes("res.cloudinary.com")) {
-      try {
-        // pop out the last then split by symbol dot "."
-        const publicId = book.image.split("/").pop()?.split(".")[0]; 
-
-        // CDN may still return the cached version until the cache expires (can take hours to days)
-        // so we need { invalidate: true }
-        await cloudinary.uploader.destroy(`${publicId}`, { invalidate: true });
-      } 
-      catch (deleteError) {
-        console.log("Error deleting image from cloudinary!", deleteError);
-      }
-    }
+    // delete image, file from cloudinary as well
+    await deleteAssetOutOfCloudinary(book.image);
+    await deleteAssetOutOfCloudinary(book.fileBook);
 
     await book.deleteOne();
 
     res.json({ 
-      message: "Book deleted successfully!" 
+      message: "Delete book successfully!" 
     });
   } 
   catch(error) {
