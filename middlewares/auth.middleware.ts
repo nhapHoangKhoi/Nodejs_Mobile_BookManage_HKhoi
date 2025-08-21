@@ -12,30 +12,40 @@ import { UserRequest } from "../interfaces/request.interface";
 //   }),
 // });
 
-const protectRoute = async (req: UserRequest, res: Response, next: NextFunction) => {
+export const protectRoute = async (req: UserRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if(!token) {
-      res.status(401).json({ message: "No authentication token, access denied" });
+      res.status(401).json({ 
+        message: "No authentication token, access denied" 
+      });
       return;
     } 
-
+    
     const decoded = jwt.verify(token, `${process.env.JWT_SECRET}`) as jwt.JwtPayload;
-    const { userId } = decoded;
+    const { id, email } = decoded;
 
-    const user = await UserModel.findById(userId).select("-password");
+    const user = await UserModel
+      .findOne({
+        _id: id,
+        email: email
+      })
+      .select("-password");
+
     if(!user) {
-      res.status(401).json({ message: "Token is not valid" });
+      res.status(401).json({ 
+        message: "Invalid token!" 
+      });
       return;
-    } 
+    }
 
     req.user = user;
     next();
   } 
   catch(error: any) {
     console.error("Authentication error:", error.message);
-    res.status(401).json({ message: "Token is not valid" });
+    res.status(401).json({ 
+      message: "Token is not valid" 
+    });
   }
 };
-
-export default protectRoute;

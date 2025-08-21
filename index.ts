@@ -11,9 +11,9 @@ import job from './config/cron';
 // import cookieParser from 'cookie-parser';
 // --- End cookie-parser library
 
-// import clientRoutes from "./routes/client/index.route";
-import authRoutes from "./routes/auth.route";
-import bookRoutes from "./routes/book.route";
+import adminRoutes from "./routes/admin/index.route";
+// import authRoutes from "./routes/admin/auth.route";
+// import bookRoutes from "./routes/book.route";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -50,9 +50,9 @@ app.use(express.json());
 // --- End cookie-parser library
 
 // --- Set up routes
-// app.use("/", clientRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/books", bookRoutes);
+app.use("/api", adminRoutes);
+// app.use("/api/auth", authRoutes);
+// app.use("/api/books", bookRoutes);
 // --- End set up routes
 
 app.listen(port, () => {
