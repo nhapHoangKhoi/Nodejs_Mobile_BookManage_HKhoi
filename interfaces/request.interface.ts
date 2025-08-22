@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-export interface UserRequest extends Request {
+export interface AccountAdminRequest extends Request {
   user?: any;
 }
 

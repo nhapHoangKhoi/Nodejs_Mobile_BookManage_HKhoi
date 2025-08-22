@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import UserModel from "../../models/user.model";
+import AccountAdminModel from "../../models/account-admin.model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
@@ -23,13 +23,13 @@ export const registerAccountAdmin = async (request: Request, response: Response)
     }
 
     // check if user already exists
-    const existingEmail = await UserModel.findOne({ email });
+    const existingEmail = await AccountAdminModel.findOne({ email });
     if(existingEmail) {
       response.status(400).json({ message: "Email already exists" });
       return;
     }
 
-    const existingUsername = await UserModel.findOne({ username });
+    const existingUsername = await AccountAdminModel.findOne({ username });
     if(existingUsername) {
       response.status(400).json({ message: "Username already exists" });
       return;
@@ -42,7 +42,7 @@ export const registerAccountAdmin = async (request: Request, response: Response)
     // get random avatar
     const profileImage = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
 
-    const user = new UserModel({
+    const user = new AccountAdminModel({
       email: email,
       username: username,
       password: hashedPassword,
@@ -89,7 +89,7 @@ export const loginAccountAdmin = async (request: Request, response: Response) =>
     }
 
     // check if user exists
-    const user = await UserModel.findOne({ email: email });
+    const user = await AccountAdminModel.findOne({ email: email });
     if(!user) {
       response.status(400).json({ message: "Invalid credentials" });
       return;

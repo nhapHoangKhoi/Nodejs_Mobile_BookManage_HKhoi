@@ -27,6 +27,6 @@ const schema = new mongoose.Schema(
   }
 );
 
-const UserModel = mongoose.model("User", schema, "users");
+const AccountAdminModel = mongoose.model("AccountAdmin", schema, "accounts-admin");
 
-export default UserModel;
+export default AccountAdminModel;

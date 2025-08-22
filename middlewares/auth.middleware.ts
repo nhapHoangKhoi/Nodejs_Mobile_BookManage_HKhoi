@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
-import UserModel from "../models/user.model";
-import { UserRequest } from "../interfaces/request.interface";
+import AccountAdminModel from "../models/account-admin.model";
+import { AccountAdminRequest } from "../interfaces/request.interface";
 
 // const response = await fetch(`http://localhost:3000/api/books`, {
 //   method: "POST",
@@ -12,7 +12,7 @@ import { UserRequest } from "../interfaces/request.interface";
 //   }),
 // });
 
-export const protectRoute = async (req: UserRequest, res: Response, next: NextFunction) => {
+export const protectRoute = async (req: AccountAdminRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if(!token) {
@@ -25,7 +25,7 @@ export const protectRoute = async (req: UserRequest, res: Response, next: NextFu
     const decoded = jwt.verify(token, `${process.env.JWT_SECRET}`) as jwt.JwtPayload;
     const { id, email } = decoded;
 
-    const user = await UserModel
+    const user = await AccountAdminModel
       .findOne({
         _id: id,
         email: email
