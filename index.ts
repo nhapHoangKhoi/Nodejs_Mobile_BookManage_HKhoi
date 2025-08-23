@@ -12,6 +12,7 @@ import job from './config/cron';
 // --- End cookie-parser library
 
 import adminRoutes from "./routes/admin/index.route";
+import clientRoutes from "./routes/client/index.route";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -49,6 +50,7 @@ app.use(express.json());
 
 // --- Set up routes
 app.use("/api", adminRoutes);
+app.use("/api/client", clientRoutes);
 // --- End set up routes
 
 app.listen(port, () => {
