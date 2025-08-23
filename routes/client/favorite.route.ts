@@ -16,4 +16,10 @@ router.get(
   favoriteController.getListFavoriteBooks
 );
 
+router.delete(
+  "/:bookId/:clientId", 
+  authMiddleware.verifyTokenClient,
+  favoriteController.removeBookFromFavorites
+);
+
 export default router;

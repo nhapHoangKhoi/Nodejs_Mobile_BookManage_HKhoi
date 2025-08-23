@@ -63,3 +63,41 @@ export const getListFavoriteBooks = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export const removeBookFromFavorites = async (req: Request, res: Response) => {
+  try {
+    const { bookId, clientId } = req.params;
+
+    const isExistedBook = await FavoriteModel.findOne({
+      clientId: clientId,
+      bookId: bookId
+    });
+
+    if(!isExistedBook) {
+      res.status(400).json({ 
+        message: "This book is not in favorites!" 
+      });
+      return;
+    }
+
+    await FavoriteModel.deleteOne({
+      clientId: clientId,
+      bookId: bookId
+    })
+
+    res.status(200).json({
+      code: "success",
+      message: "Remove book from favorites successfully!"
+    });
+  } 
+  catch(error: any) {
+    if(error.code === 11000) { // because of schema.index unique written in favorite.model.ts
+      res.status(400).json({
+        code: "error",
+        message: "This book is already in your favorites!",
+      });
+      return;
+    }
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
