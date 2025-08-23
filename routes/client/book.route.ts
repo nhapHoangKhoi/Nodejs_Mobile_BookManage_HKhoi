@@ -3,7 +3,7 @@ import * as bookController from "../../controllers/client/book.controller";
 
 const router = Router();
 
-// (infinit loading)
+// (infinite loading)
 router.get("/", bookController.getListBooks);
 
 export default router;
