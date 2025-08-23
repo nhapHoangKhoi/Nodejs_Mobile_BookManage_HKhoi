@@ -19,7 +19,8 @@ export const getListBooks = async (req: Request, res: Response) => {
         createdAt: "desc"
       })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .select("-user");
 
     res.json({
       books: books,

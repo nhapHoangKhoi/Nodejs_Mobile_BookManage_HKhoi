@@ -37,6 +37,22 @@ router.post(
   bookController.createBook
 );
 
+router.get(
+  "/:id", 
+  authMiddleware.protectRoute,
+  bookController.getEditDetailedBook
+);
+
+router.put(
+  "/:id", 
+  authMiddleware.protectRoute,
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'fileBook', maxCount: 1 }
+  ]), 
+  bookController.editBook
+);
+
 router.delete(
   "/:id", 
   authMiddleware.protectRoute, 
