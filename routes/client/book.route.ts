@@ -6,4 +6,6 @@ const router = Router();
 // (infinite loading)
 router.get("/", bookController.getListBooks);
 
+router.get("/detail/:id", bookController.getDetailedBook);
+
 export default router;

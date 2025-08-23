@@ -33,3 +33,44 @@ export const getListBooks = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export const getDetailedBook = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    const record = await BookModel.findOne({
+      _id: id
+    })
+
+    if(!record) {
+      res.json({
+        code: "error",
+        message: "ID invalid!"
+      })
+      return;
+    }
+
+    const dataFinal = {
+      id: record.id,
+      title: record.title,
+      caption: record.caption,
+      image: record.image,
+      fileBook: record.fileBook,
+      rating: record.rating,
+      updatedAt: record.updatedAt
+    };
+
+    res.json({
+      code: "success",
+      message: "Get detailed book successfully!",
+      bookDetail: dataFinal
+    })
+  } 
+  catch (error) {
+    console.log(error);
+    res.json({
+      code: "error",
+      message: "ID invalid!"
+    })
+  }
+}
