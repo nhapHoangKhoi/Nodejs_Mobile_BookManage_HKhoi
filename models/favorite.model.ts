@@ -18,9 +18,6 @@ const schema = new mongoose.Schema(
   }
 );
 
-// prevent duplicate favorite per (client, book)
-schema.index({ client: 1, book: 1 }, { unique: true });
-
 const FavoriteModel = mongoose.model("Favorite", schema, "favorites");
 
 export default FavoriteModel;

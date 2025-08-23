@@ -10,4 +10,10 @@ router.post(
   favoriteController.addFavoriteBook
 );
 
+router.get(
+  "/:bookId/:clientId", 
+  authMiddleware.verifyTokenClient,
+  favoriteController.getListFavoriteBooks
+);
+
 export default router;
