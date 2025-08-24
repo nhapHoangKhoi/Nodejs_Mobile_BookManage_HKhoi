@@ -37,14 +37,45 @@ export const addFavoriteBook = async (req: Request, res: Response) => {
   }
 }
 
-export const getListFavoriteBooks = async (req: Request, res: Response) => {
+export const getBookFromFavorite = async (req: Request, res: Response) => {
   try {
     const { bookId, clientId } = req.params;
 
-    const favoriteBooks = await FavoriteModel.find({
+    const favoriteBook = await FavoriteModel.findOne({
       bookId: bookId,
       clientId: clientId
     });
+
+    res.status(200).json({
+      code: "success",
+      message: "Add favorite book successfully!",
+      favoriteBook: favoriteBook
+    });
+  } 
+  catch(error: any) {
+    if(error.code === 11000) { // because of schema.index unique written in favorite.model.ts
+      res.status(400).json({
+        code: "error",
+        message: "This book is already in your favorites!",
+      });
+      return;
+    }
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export const getListFavoriteBooks = async (req: Request, res: Response) => {
+  try {
+    const { clientId } = req.params;
+
+    const favoriteBooks = await FavoriteModel
+      .find({
+        clientId: clientId
+      })
+      .sort({
+        updatedAt: "desc"
+      })
+      .populate("bookId", "-user");
 
     res.status(200).json({
       code: "success",

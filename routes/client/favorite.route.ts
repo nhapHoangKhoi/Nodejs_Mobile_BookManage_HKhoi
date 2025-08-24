@@ -13,6 +13,12 @@ router.post(
 router.get(
   "/:bookId/:clientId", 
   authMiddleware.verifyTokenClient,
+  favoriteController.getBookFromFavorite
+);
+
+router.get(
+  "/:clientId", 
+  authMiddleware.verifyTokenClient,
   favoriteController.getListFavoriteBooks
 );
 
