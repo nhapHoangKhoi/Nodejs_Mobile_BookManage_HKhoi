@@ -42,7 +42,7 @@ export const createRating = async (req: AccountClientRequest, res: Response) => 
 
     const ratingDataWithExpire = {
       ...ratingData,
-      expireAt: expireAfter
+      expireAt: Date.now() + expireAfter
     };
 
     const newTempRating = new RatingLimitModel(ratingDataWithExpire);
