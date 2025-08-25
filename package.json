@@ -23,7 +23,8 @@
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "swagger-autogen": "^2.23.7",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "unidecode": "^1.1.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
@@ -33,6 +34,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.10",
     "@types/swagger-ui-express": "^4.1.8",
+    "@types/unidecode": "^1.1.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
