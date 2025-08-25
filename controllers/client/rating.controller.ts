@@ -2,13 +2,14 @@ import { Response, Request } from "express";
 import BookModel from "../../models/book.model";
 import RatingModel from "../../models/rating.model";
 import { AccountClientRequest } from "../../interfaces/request.interface";
+import RatingLimitModel from "../../models/rating-limit.model";
 
 export const createRating = async (req: AccountClientRequest, res: Response) => {
   try {
     const { ratingValue, bookId } = req.body;
 
     if(!ratingValue || !bookId) {
-      res.status(400).json({ message: "Please provide ratingValue and bookId!" });
+      res.status(400).json({ message: "Invalid ratingValue or bookId!" });
       return;
     }
 
@@ -20,21 +21,33 @@ export const createRating = async (req: AccountClientRequest, res: Response) => 
 
     const userId = req.user._id;
 
-    // check if user is admin (assuming req.user has a role field)
-    // if(req.user.role === "admin") {
-    //   res.status(403).json({ message: "Admins can only set initial rating during book creation" });
-    //   return;
-    // }
-
-    // check if user already rated
-    const existingRating = await RatingModel.findOne({ bookId, userId });
+    // check if user have just rated
+    const existingRating = await RatingLimitModel.findOne({ bookId, userId });
     if(existingRating) {
-      res.status(400).json({ message: "You have already rated this book!" });
+      res.status(400).json({ message: "You rated this book recently. Please come back later!" });
       return;
     }
 
-    const newRating = new RatingModel({ ratingValue, bookId, userId });
+    const ratingData = {
+      ratingValue: ratingValue,
+      bookId: bookId,
+      userId: userId 
+    }
+
+    const newRating = new RatingModel(ratingData);
     await newRating.save();
+
+    //--- store the updated info into temporary database (store only for 5 minutes)
+    const expireAfter = 5 * 60 * 1000; // 5 minutes (in miliseconds)
+
+    const ratingDataWithExpire = {
+      ...ratingData,
+      expireAt: expireAfter
+    };
+
+    const newTempRating = new RatingLimitModel(ratingDataWithExpire);
+    await newTempRating.save();
+    //--- End store the updated info into temporary database (store only for 5 minutes)
 
     // update book's average rating
     await updateBookRating(bookId);
