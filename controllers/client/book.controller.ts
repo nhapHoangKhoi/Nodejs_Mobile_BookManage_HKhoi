@@ -54,7 +54,7 @@ export const getDetailedBook = async (req: Request, res: Response) => {
     const dataFinal = {
       id: record.id,
       title: record.title,
-      caption: record.caption,
+      description: record.description,
       image: record.image,
       fileBook: record.fileBook,
       rating: record.rating,

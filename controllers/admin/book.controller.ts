@@ -60,9 +60,9 @@ export const getListOwnerPublishedBooks = async (req: BookRequest, res: Response
 
 export const createBook = async (req: BookRequest, res: Response) => {
   try {
-    const { title, caption, rating } = req.body;
+    const { title, description, rating } = req.body;
 
-    if(!title || !caption || !rating) {
+    if(!title || !description || !rating) {
       res.status(400).json({ message: "Please provide all fields!" });
       return;
     }
@@ -166,9 +166,9 @@ export const getEditDetailedBook = async (req: BookRequest, res: Response) => {
 export const editBook = async (req: BookRequest, res: Response) => {
   try {
     const id = req.params.id;
-    const { title, caption, rating } = req.body;
+    const { title, description, rating } = req.body;
 
-    if(!title || !caption || !rating) {
+    if(!title || !description || !rating) {
       res.status(400).json({ message: "Please provide all fields!" });
       return;
     }
