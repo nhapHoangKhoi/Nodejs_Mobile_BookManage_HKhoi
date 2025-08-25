@@ -18,11 +18,21 @@ const schema = new mongoose.Schema(
       type: String,
       required: true
     },
-    rating: {
+    rating: { // used only for once as initialRating
       type: Number,
       required: true,
       min: 1,
       max: 5,
+    },
+    avgRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    ratingCount: {
+      type: Number,
+      default: 0,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

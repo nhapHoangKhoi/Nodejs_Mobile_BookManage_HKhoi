@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import BookModel from "../../models/book.model";
 import { BookRequest } from "../../interfaces/request.interface";
 import { deleteAssetOutOfCloudinary } from "../../utils/cloudinary.utils";
+import RatingModel from "../../models/rating.model";
 
 // lazy loading (infinite loading) when scrolloing using pagination
 // idea (sent from frontend): 
@@ -95,8 +96,29 @@ export const createBook = async (req: BookRequest, res: Response) => {
 
     req.body.user = req.user._id;
 
+    // set initial rating if provided
+    if(rating) {
+      if (rating < 1 || rating > 5) {
+        res.status(400).json({ message: "Rating must be between 1 and 5" });
+        return;
+      }
+      req.body.rating = rating;
+      req.body.avgRating = rating; // initial avgRating is the admin's rating
+      req.body.ratingCount = 1; // count admin's rating
+    }
+
     const newBook = new BookModel(req.body);
     await newBook.save();
+
+    // ff rating provided, create a RatingModel entry for the admin
+    if(rating) {
+      const newRating = new RatingModel({
+        ratingValue: rating,
+        bookId: newBook._id,
+        userId: req.user._id,
+      });
+      await newRating.save();
+    }
 
     res.status(201).json({
       code: "success",

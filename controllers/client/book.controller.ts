@@ -58,6 +58,8 @@ export const getDetailedBook = async (req: Request, res: Response) => {
       image: record.image,
       fileBook: record.fileBook,
       rating: record.rating,
+      avgRating: record.avgRating,
+      ratingCount: record.ratingCount,
       updatedAt: record.updatedAt
     };
 
