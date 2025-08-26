@@ -44,6 +44,7 @@ export const searchItems = async (req: Request, res: Response) => {
     const books = await BookModel
       .find(objectFind)
       .sort({
+        avgRating: "desc",
         createdAt: "desc"
       })
       .skip(skip)
